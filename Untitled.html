@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Services Directory - Find Trusted Professionals Nearby</title>
+    <style>
+        :root {
+            --primary: #4A6FFF;
+            --primary-dark: #3D5CE0;
+            --secondary: #FF9F4A;
+            --dark: #333;
+            --light: #F7FAFF;
+            --gray: #F0F2F5;
+            --gray-dark: #7A7A7A;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/api/placeholder/1200/600') center/cover no-repeat;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .search-select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: white;
+        }
+        
+        .search-btn {
+            padding: 12px 20px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: #E08C3D;
+        }
+        
+        /* Services Section */
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            color: var(--gray-dark);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .service-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+        
+        .service-content {
+            padding: 20px;
+        }
+        
+        .service-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .service-description {
+            color: var(--gray-dark);
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .service-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .rating-star {
+            color: gold;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            background-color: var(--gray);
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            padding: 20px;
+        }
+        
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+        }
+        
+        .step-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .step-description {
+            color: var(--gray-dark);
+        }
+        
+        /* Featured Providers */
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .provider-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .provider-header {
+            position: relative;
+            height: 100px;
+            background-color: var(--primary);
+        }
+        
+        .provider-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 5px solid white;
+            position: absolute;
+            bottom: -50px;
+            left: 20px;
+            background-color: #eee;
+        }
+        
+        .provider-content {
+            padding: 60px 20px 20px;
+        }
+        
+        .provider-name {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .provider-profession {
+            color: var(--gray-dark);
+            margin-bottom: 15px;
+        }
+        
+        .provider-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: var(--gray-dark);
+            font-size: 14px;
+        }
+        
+        .provider-rating {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .provider-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .testimonials .section-title, 
+        .testimonials .section-subtitle {
+            color: white;
+        }
+        
+        .testimonials .section-subtitle {
+            opacity: 0.9;
+        }
+        
+        .testimonial-cards {
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+            padding: 20px 10px;
+        }
+        
+        .testimonial-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 30px;
+            min-width: 300px;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+        }
+        
+        .testimonial-text {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .testimonial-text::before {
+            content: """;
+            font-size: 60px;
+            position: absolute;
+            top: -20px;
+            left: -15px;
+            opacity: 0.3;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .author-info h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .author-info p {
+            opacity: 0.7;
+            font-size: 14px;
+        }
+        
+        /* CTA Section */
+        .cta {
+            text-align: center;
+        }
+        
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 70px 0 20px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-col h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .footer-col h3:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 15px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: block;
+        }
+        
+        .footer-link:hover {
+            opacity: 1;
+            color: var(--secondary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .social-icon:hover {
+            background-color: var(--secondary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links, .nav-buttons {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .steps {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .step {
+                margin-bottom: 20px;
+            }
+            
+            .testimonial-cards {
+                flex-direction: column;
+            }
+            
+            .testimonial-card {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <div class="logo-icon">LS</div>
+                    LocalServices
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link">Home</a></li>
+                    <li><a href="#" class="nav-link">Services</a></li>
+                    <li><a href="#" class="nav-link">Providers</a></li>
+                    <li><a href="#" class="nav-link">How It Works</a></li>
+                    <li><a href="#" class="nav-link">About Us</a></li>
+                </ul>
+                
+                <div class="nav-buttons">
+                    <button class="btn btn-outline">Log In</button>
+                    <button class="btn btn-primary">Sign Up</button>
+                </div>
+                
+                <div class="menu-toggle">☰</div>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Find Trusted Local Service Providers</h1>
+                <p>Connect with verified professionals for home maintenance, repairs, and specialized services in your area.</p>
+                
+                <div class="search-container">
+                    <form class="search-form">
+                        <select class="search-select">
+                            <option value="">Select Service Category</option>
+                            <option value="plumbing">Plumbing</option>
+                            <option value="electrical">Electrical</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="carpentry">Carpentry</option>
+                            <option value="gardening">Gardening</option>
+                            <option value="painting">Painting</option>
+                        </select>
+                        <input type="text" class="search-input" placeholder="Your Location">
+                        <button type="submit" class="search-btn">Find Services</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Popular Services -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Popular Services</h2>
+                <p class="section-subtitle">Discover the most sought-after services in your area and connect with skilled professionals.</p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- Service Card 1 -->
+                <div class="service-card">
+                    <div class="service-img"></div>
+                    <div class="service-content">
+                        <h3 class="service-title">Plumbing Services</h3>
+                        <p class="service-description">Professional plumbing services from licensed and experienced plumbers.</p>
+                        <div class="service-meta">
+                            <div class="service-rating">
+                                <span class="rating-star">★</span>
+                                <span>4.8 (256 reviews)</span>
+                            </div>
+                            <span>Starting from $60</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Card 2 -->
+                <div class="service-card">
+                    <div class="service-img"></div>
+                    <div class="service-content">
+                        <h3 class="service-title">Electrical Repairs</h3>
+                        <p class="service-description">Certified electricians for all your electrical installation and repair needs.</p>
+                        <div class="service-meta">
+                            <div class="service-rating">
+                                <span class="rating-star">★</span>
+                                <span>4.7 (198 reviews)</span>
+                            </div>
+                            <span>Starting from $75</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Card 3 -->
+                <div class="service-card">
+                    <div class="service-img"></div>
+                    <div class="service-content">
+                        <h3 class="service-title">Home Cleaning</h3>
+                        <p class="service-description">Professional home cleaning services for a spotless and fresh living space.</p>
+                        <div class="service-meta">
+                            <div class="service-rating">
+                                <span class="rating-star">★</span>
+                                <span>4.9 (320 reviews)</span>
+                            </div>
+                            <span>Starting from $50</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Card 4 -->
+                <div class="service-card">
+                    <div class="service-img"></div>
+                    <div class="service-content">
+                        <h3 class="service-title">Carpentry Work</h3>
+                        <p class="service-description">Skilled carpenters for furniture repair, installation, and custom woodwork.</p>
+                        <div class="service-meta">
+                            <div class="service-rating">
+                                <span class="rating-star">★</span>
+                                <span>4.6 (175 reviews)</span>
+                            </div>
+                            <span>Starting from $80</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works -->
+    <section class="section how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Finding and booking trusted local service providers has never been easier.</p>
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-icon">1</div>
+                    <h3 class="step-title">Search</h3>
+                    <p class="step-description">Search for services in your area based on your specific needs and requirements.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-icon">2</div>
+                    <h3 class="step-title">Book</h3>
+                    <p class="step-description">Choose a service provider, check availability, and schedule an appointment.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-icon">3</div>
+                    <h3 class="step-title">Receive Service</h3>
+                    <p class="step-description">Get your service completed by experienced and verified professionals.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-icon">4</div>
+                    <h3 class="step-title">Pay & Review</h3>
+                    <p class="step-description">Securely pay for the service and share your experience by leaving a review.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Providers -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Top-Rated Service Providers</h2>
+                <p class="section-subtitle">Meet our highly-rated professionals providing exceptional services in your area.</p>
+            </div>
+            
+            <div class="providers-grid">
+                <!-- Provider Card 1 -->
+                <div class="provider-card">
+                    <div class="provider-header">
+                        <div class="provider-avatar"></div>
+                    </div>
+                    <div class="provider-content">
+                        <h3 class="provider-name">Alex Johnson</h3>
+                        <p class="provider-profession">Professional Plumber</p>
+                        
+                        <div class="provider-info">
+                            <span>📍</span>
+                            <span>Downtown</span>
+                        </div>
+                        
+                        <div class="provider-info">
+                            <span>💼</span>
+                            <span>10+ years experience</span>
+                        </div>
+                        
+                        <div class="provider-rating">
+                            <span class="rating-star">★★★★★</span>
+                            <span>5.0 (127 reviews)</span>
+                        </div>
+                        
+                        <div class="provider-actions">
+                            <button class="btn btn-outline">View Profile</button>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Provider Card 2 -->
+                <div class="provider-card">
+                    <div class="provider-header">
+                        <div class="provider-avatar"></div>
+                    </div>
+                    <div class="provider-content">
+                        <h3 class="provider-name">Sarah Williams</h3>
+                        <p class="provider-profession">Certified Electrician</p>
+                        
+                        <div class="provider-info">
+                            <span>📍</span>
+                            <span>North Side</span>
+                        </div>
+                        
+                        <div class="provider-info">
+                            <span>💼</span>
+                            <span>8+ years experience</span>
+                        </div>
+                        
+                        <div class="provider-rating">
+                            <span class="rating-star">★★★★★</span>
+                            <span>4.9 (98 reviews)</span>
+                        </div>
+                        
+                        <div class="provider-actions">
+                            <button class="btn btn-outline">View Profile</button>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Provider Card 3 -->
+                <div class="provider-card">
+                    <div class="provider-header">
+                        <div class="provider-avatar"></div>
+                    </div>
+                    <div class="provider-content">
+                        <h3 class="provider-name">Michael Chen</h3>
+                        <p class="provider-profession">Home Cleaning Expert</p>
+                        
+                        <div class="provider-info">
+                            <span>📍</span>
+                            <span>West End</span>
+                        </div>
+                        
+                        <div class="provider-info">
+                            <span>💼</span>
+                            <span>5+ years experience</span>
+                        </div>
+                        
+                        <div class="provider-rating">
+                            <span class="rating-star">★★★★★</span>
+                            <span>4.8 (156 reviews)</span>
+                        </div>
+                        
+                        <div class="provider-actions">
+                            <button class="btn btn-outline">View Profile</button>
+                            <button class="btn btn-primary">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials -->
+    <section class="section testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">What Our Customers Say</h2>
+                <p class="section-subtitle">Hear from people who have used our platform to find reliable service providers.</p>
+            </div>
+            
+            <div class="testimonial-cards">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        I was desperate to find a reliable plumber for a leak in my bathroom. LocalServices connected me with Alex, who was prompt, professional, and fixed the issue within an hour. Couldn't be happier with the service!
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar"></div>
+                        <div class="author-info">
+                            <h4>Emily Parker</h4>
+                            <p>Homeowner</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        As a new homeowner, I needed multiple services for my fixer-upper. This platform made it so easy to find and book verified professionals. The booking system and secure payments gave me peace of mind.
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar"></div>
+                        <div class="author-info">
+                            <h4>David Thompson</h4>
+                            <p>First-time Homebuyer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        The review system helped me choose the best electrician in my area. I could see real customer feedback before booking, which was incredibly helpful. Will definitely use this platform again!
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar"></div>
+                        <div class="author-info">
+                            <h4>Jessica Miller</h4>
+                            <p>Apartment Resident</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="section cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="section-title">Ready to Get Started?</h2>
+                <p class="section-subtitle">Join thousands of satisfied customers who have found reliable service providers through our platform.</p>
+                
+                <div class="cta-buttons">
+                    <button class="btn btn-primary">Find a Service Provider</button>
+                    <button class="btn btn-outline">List Your Business</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>About Us</h3>
+                    <p>LocalServices is a platform connecting customers with trusted local service providers. Our mission is to make finding reliable professionals simple, transparent, and stress-free.</p>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-icon">f</a>
+                        <a href="#" class="social-icon">t</a>
+                        <a href="#" class="social-icon">in</a>
+                        <a href="#" class="social-icon">ig</a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3>For Customers</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link">How It Works</a></li>
+                        <li><a href="#" class="footer-link">Safety & Trust</a></li>
+                        <li><a href="#" class="footer-link">Payment Protection</a></li>
